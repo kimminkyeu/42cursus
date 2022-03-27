@@ -68,6 +68,7 @@ echo -en "#Disk Usage: "; df -m | awk '$NF=="/" {printf "%s", $3}'; \
 # (3) https://sarc.io/index.php/forum/tips/3117-cpu 
 #   * -b		: 배치모드 옵션 
 #   * -n		: top 실행 주기를 설정
+# ex. -n1을 하면, top 실행 주기를 1회로 설정한다. 
 #   * -p		: process ID 
 # --------------------------------------------------------------
 echo -en "#CPU load: "; top -bn1 \
