@@ -1,17 +1,24 @@
 #!/bin/bash
 
-# echo 후 줄바꿈을 하기 위해서... echo가 탈출 문자인 \ 를 만나면 특수 문자로 처리하도록 하려면 -e 옵션을 주고 실행
+
+# ---[ 쉘 명령어 옵션1 ]----------------------------------------
+# echo 후 줄바꿈을 하기 위해서... echo가 탈출 문자인 \ 를 만나면 
+# 특수 문자로 처리하도록 하려면 -e 옵션을 주고 실행
 # echo 매개 변수에 -n을 추가하면 원하는 대로 한 줄로 표현할 수 있다. 
 # -- 실행 예시 --
-# $ echo -n xxx: ; printf "mm"
-# 출력 결과 : xxx:mm
-# linux에서 cpu 정보 확인하는 방법 https://letitkang.tistory.com/50
+# $ echo -n xxx: ; printf "mm" ---> (출력 결과 : xxx:mm)
+
+# ---[ 쉘 명령어 옵션2 ]----------------------------------------
+# ; - 앞의 명령어가 실패해도 다음 명령어가 실행
+# && - 앞의 명령어가 성공했을 때 다음 명령어가 실행
+# & - 앞의 명령어를 백그라운드로 돌리고 동시에 뒤의 명령어를 실행
+# --------------------------------------------------------------
 
 
 # --------------------------------------------------------------
+# linux에서 cpu 정보 확인하는 방법 https://letitkang.tistory.com/50
 # uname 명령어 = 시스템 정보를 -a 로 모두  출력
 echo -en "#Architecture: "; uname -a
-# --------------------------------------------------------------
 
 
 # 물리 cpu 개수             ^기호는 라인의 시작을 의미
@@ -23,7 +30,7 @@ echo -en "#CPU physical : "; grep ^processor /proc/cpuinfo | wc -l
 # --------------------------------------------------------------
 # (1) -c 는 일치 라인 출력   --> Q : 위랑 뭐가 다른거여??
 echo -en "#vCPU : "; grep -c processor /proc/cpuinfo
-# --------------------------------------------------------------
+
 
 
 # The current available RAM on your server and its utilization rate as a percentage.
@@ -34,7 +41,7 @@ echo -en "#vCPU : "; grep -c processor /proc/cpuinfo
 # --------------------------------------------------------------
 echo -en "#Memory Usage: "; free -m \
 							| awk 'NR==2 {printf"%s/%sMB (%.2f%%)\n", $3, $2, $3/$2*100 }'
-# --------------------------------------------------------------
+
 
 
 # The current available memory on your server and its utilization rate as a percentage.
@@ -51,7 +58,6 @@ echo -en "#Disk Usage: "; df -m | awk '$NF=="/" {printf "%s", $3}'; \
 						  df -h | awk '$NF=="/" {printf "/%s (%s)\n", $2, $5}'
 						# NF -> number of field. 비어있으면 마지막 필드(열) --> 최상단 디텍토리 출력 .	
 						# 먼저 메가바이트로 앞자리를 출력하고, 뒤를 기가로 맞추기 위함
-# --------------------------------------------------------------
 
 
 
@@ -96,37 +102,43 @@ echo -en "#LVM use: "; if (cat /etc/fstab | grep -q "/dev/mapper/";) \
 
 # The number of active connections.
 # (1) netstat -at 명령어 : Listing only TCP (Transmission Control Protocol) port connections using netstat -at.
-
+# -a : all / -t : tcp / -u : udp
 # --------------------------------------------------------------
-echo -en "#Connections TCP : "; cat /proc/net/tcp \
-								| wc -l \
-								| awk '{print $1-1}' \
-								| tr '\n' ' ' \
-								&& echo "ESTABLISHED"
+#echo -en "#Connections TCP : "; cat /proc/net/tcp \
+#								| wc -l \
+#								| awk '{print $1-1}' \
+#								| tr '\n' ' ' \
+#								&& echo "ESTABLISHED"
 
+echo -en "#Connections TCP : "; netstat -at \
+								| grep "ESTABLISHED" \
+								| wc -l | tr '\n' ' ' && echo "ESTABLISHED"
 
 # The number of users using the server.
 # --------------------------------------------------------------
-echo -en "#User log: "; w | wc -l \
-						  | awk '{print $1-2}'
+# https://www.computerhope.com/issues/ch001649.htm
+echo -en "#User log: "; who | wc -l
 
 
 # The IPv4 address of your server and its MAC (Media Access Control) address.
+# https://opensource.com/article/18/5/how-find-ip-address-linux
 # --------------------------------------------------------------
-echo -en "#Network: "; echo -n "IP " && ip route list \
-						| grep link | awk '{print $9}' \
-						| tr '\n' ' ' && echo -n "(" && ip link show \
-						| grep link/ether \
-						| awk '{print $2}' \
-						| tr '\n' ')' && printf "\n"
-						
+#echo -en "#Network: "; echo -n "IP " && ip route list \
+#						| grep link | awk '{print $9}' \
+#						| tr '\n' ' ' && echo -n "(" && ip link show \
+#						| grep link/ether \
+#						| awk '{print $2}' \
+#						| tr '\n' ')' && printf "\n"
 
+
+# hostname -I : ip 주소 출력용
+# ip addr	  : mac 주소 출력용
+echo -en "#Network: "; echo -n "IP " && hostname -I \
+						| tr '\n' ' ' | tr -d ' ' && ip addr | grep 'link/ether' \
+						| awk '{printf " (%s)\n", $2}'
+	
 # The number of commands executed with the sudo program.
+# 내 sudo 파일 위치 : var/log/sudo/sudo_history 에 있음
 # --------------------------------------------------------------
-echo -en "#Sudo :"; cat /var/log/sudo/sudo_history | wc -l | tr '\n' ' ' && echo "cmd"
-
-
-
-
-
-
+echo -en "#Sudo : "; cat /var/log/sudo/sudo_history \
+					| wc -l | tr '\n' ' ' && echo "cmd"
