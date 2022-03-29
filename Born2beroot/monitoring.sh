@@ -54,11 +54,13 @@ echo -en "#Memory Usage: "; free -m \
 #		-s 옵션 : 서브디렉토리 출력하지 않고, 요약된 정보를 출력
 #		예시	: sudo du -sh /home 
 # --------------------------------------------------------------
-echo -en "#Disk Usage: "; df -m | awk '$NF=="/" {printf "%s", $3}'; \
-						  df -h | awk '$NF=="/" {printf "/%s (%s)\n", $2, $5}'
+#echo -en "#Disk Usage: "; df -m | awk '$NF=="/" {printf "%s", $3}'; \
+#						  df -h | awk '$NF=="/" {printf "/%s (%s)\n", $2, $5}'
 						# NF -> number of field. 비어있으면 마지막 필드(열) --> 최상단 디텍토리 출력 .	
 						# 먼저 메가바이트로 앞자리를 출력하고, 뒤를 기가로 맞추기 위함
 
+echo -en "#Disk Usage: "; df -h | awk '$NF=="/" {printf "%d/%s (%s)\n", $3, $2, $5}'
+		
 
 
 # The current utilization rate of your processors as a percentage.
@@ -66,11 +68,15 @@ echo -en "#Disk Usage: "; df -m | awk '$NF=="/" {printf "%s", $3}'; \
 # (1) top 명령어 : 유닉스 계열의 시스템에서 프로세스 목록을 CPU 사용률이 높은 것부터 보여준다.
 # (2) https://support.site24x7.com/portal/en/kb/articles/how-is-cpu-utilization-calculated-for-a-linux-server-monitor
 # (3) https://sarc.io/index.php/forum/tips/3117-cpu 
-#   * -b		: 배치모드 옵션 
+#   * -b		: 배치모드 옵션 (인터랙션 가능모드가 아니라 출력 결과로 딱 나옴) 
+# (참고)
+# https://unix.stackexchange.com/questions/138484/what-does-batch-mode-mean-for-the-top-command
 #   * -n		: top 실행 주기를 설정
-# ex. -n1을 하면, top 실행 주기를 1회로 설정한다. 
+# ex. -n1을 하면, top 실행 주기를 1회로 설정한다. (안그럼 화면이 바뀌(갱신))
 #   * -p		: process ID 
 # --------------------------------------------------------------
+# 주의! -bn2 처럼 뒤에 숫자가 1이 아니면 화면 갱신 2회를 하고 끝나서 출력이 바로 안됨.
+# 내가 그랩하는 id는 idle value, 즉 노는 cpu용량을 말한다. 
 echo -en "#CPU load: "; top -bn1 \
 					| grep "Cpu(s)" \
 					| awk -F "," '{print 100 - $4 "%"}'
@@ -86,8 +92,13 @@ echo -en "#CPU load: "; top -bn1 \
 # last reboot 명령어 : 날짜가 숫자로 안나옴 (ex Mar)
 #		   사용 예시 : last reboot | awk -F "  " 'NR==1 {print $4}'
 #	   who -b 명령어 : 날짜가 숫자로 나옴 (ex 2011-...) --> 요구사항에 따라 이렇게 하기로 결정
-echo -en "#Last boot: "; who -b \
-						| awk -F " " '{print $3 " " $4}'
+
+echo -en "#Last boot: "; last reboot -F \
+						| awk 'NR==1 {printf"%s-%s-%s %s\n", $9,$6,$7,$8}'
+
+#echo -en "#Last boot: "; who -b  \
+#						| awk '{print $3,$4}'
+
 
 
 # Whether LVM is active or not.
@@ -105,12 +116,6 @@ echo -en "#LVM use: "; if (cat /etc/fstab | grep -q "/dev/mapper/";) \
 # (1) netstat -at 명령어 : Listing only TCP (Transmission Control Protocol) port connections using netstat -at.
 # -a : all / -t : tcp / -u : udp
 # --------------------------------------------------------------
-#echo -en "#Connections TCP : "; cat /proc/net/tcp \
-#								| wc -l \
-#								| awk '{print $1-1}' \
-#								| tr '\n' ' ' \
-#								&& echo "ESTABLISHED"
-
 echo -en "#Connections TCP : "; netstat -at \
 								| grep "ESTABLISHED" \
 								| wc -l | tr '\n' ' ' && echo "ESTABLISHED"
@@ -142,4 +147,5 @@ echo -en "#Network: "; echo -n "IP " && hostname -I \
 # 내 sudo 파일 위치 : var/log/sudo/sudo_history 에 있음
 # --------------------------------------------------------------
 echo -en "#Sudo : "; cat /var/log/sudo/sudo_history \
+					| grep COMMAND \
 					| wc -l | tr '\n' ' ' && echo "cmd"
