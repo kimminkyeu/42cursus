@@ -1,0 +1,22 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+BUFFER_SIZE	get_next_line.h	/^# define BUFFER_SIZE /;"	d
+GET_NEXT_LINE_H	get_next_line.h	/^# define GET_NEXT_LINE_H$/;"	d
+capacity	get_next_line.h	/^	size_t	capacity;$/;"	m	struct:s_vector
+data	get_next_line.h	/^	void	*data;$/;"	m	struct:s_vector
+delete_vector	get_next_line_utils.c	/^void	delete_vector(t_vector *vec)$/;"	f
+ft_memcpy	get_next_line_utils.c	/^void	*ft_memcpy(void *dst, const void *src, size_t n)$/;"	f
+main	test2.c	/^int main()$/;"	f
+new_data_malloc	get_next_line_utils.c	/^char	*new_data_malloc(size_t init_size)$/;"	f
+new_vector_malloc	get_next_line_utils.c	/^t_vector	*new_vector_malloc(size_t init_capacity)$/;"	f
+print_backup	for_test.h	/^void	print_backup(char *backup, size_t buf_size)$/;"	f
+print_vector	for_test.h	/^void	print_vector(t_vector *vec)$/;"	f
+push_back_vector	get_next_line_utils.c	/^void	push_back_vector(t_vector *vec, int c)$/;"	f
+reserve_vector	get_next_line_utils.c	/^void	reserve_vector(t_vector *vec, size_t new_capacity)$/;"	f
+s_vector	get_next_line.h	/^typedef struct s_vector {$/;"	s
+size	get_next_line.h	/^	size_t	size;$/;"	m	struct:s_vector
+t_vector	get_next_line.h	/^}				t_vector;$/;"	t	typeref:struct:s_vector
