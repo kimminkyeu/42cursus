@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/20 16:52:19 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/06/16 14:33:02 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/06/16 15:33:23 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,15 +106,20 @@ int main(int ac, char **av)
 		check_num_and_push(ac, 1, av, &data);
 	render_stack(data.stack_a, data.stack_b);
 	cmd = get_next_line(STDIN_FILENO);
+	if (cmd == NULL)
+		exit_program("KO\n", EXIT_FAILURE, &data);
 	while (cmd[0] != '\n') // while nothing input (\n)
 	{
 		handle_cmd(cmd, &data);
 		render_stack(data.stack_a, data.stack_b);
 		free(cmd);
 		cmd = get_next_line(STDIN_FILENO);
+		if (cmd == NULL)
+			exit_program("KO\n", EXIT_FAILURE, &data);
 	}
 	free(cmd);
 	check_result(&data);
+	system("leaks checker > leaks_result_temp; cat leaks_result_temp | grep leaked && rm -rf leaks_result_temp");
 	exit_program("OK\n", EXIT_SUCCESS, &data);
 	return (0);
 }

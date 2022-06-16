@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/16 14:26:43 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/06/16 14:26:52 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/06/16 15:34:20 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@ void	exit_program(char *err_messege, int is_error, t_push_swap *data)
 	delete_stack2(data->stack_a);
 	delete_stack2(data->stack_b);
 	delete_darray(&(data->cmd));
+	system("leaks push_swap > leaks_result_temp; cat leaks_result_temp | grep leaked && rm -rf leaks_result_temp");
 	exit(is_error);
 }
 
@@ -83,7 +84,7 @@ void	check_num_and_push(size_t nmemb, int start_idx, char **strs, t_push_swap *d
 	while (i < nmemb)
 	{
 		// check if arguments are integers.
-		if (!ft_isinteger(strs[i]))
+		if (strs[i][0] == '\0' || !ft_isinteger(strs[i]))
 			exit_program("Error\n", EXIT_FAILURE, data);
 		// store to temp arr (for sorting to check duplicates)
 		tmp[j++] = ft_atoi(strs[i++]);
@@ -93,11 +94,6 @@ void	check_num_and_push(size_t nmemb, int start_idx, char **strs, t_push_swap *d
 
 	push_argument_to_stack(tmp, nmemb - start_idx, data->stack_a);
 	data->total_input_cnt = data->stack_a->stack->size;
-
-	/** for NOTE:  visualizer . Delete later! */
-	/* --------------------------------------------------------------  */
-	push_argument_to_stack(tmp, nmemb - start_idx, data->stack_a_copy);
-	/* --------------------------------------------------------------  */
 }
 
 void	check_single_arg_and_push(char **av, t_push_swap *data)

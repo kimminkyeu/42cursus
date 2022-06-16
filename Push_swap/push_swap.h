@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/20 12:10:54 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/06/16 13:44:04 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/06/16 15:15:42 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -127,9 +127,9 @@ extern void	check_if_same_number(int *tmp, size_t nmemb, t_push_swap *data);
 extern void	check_if_sorted(int *tmp, size_t nmemb, t_push_swap *data);
 extern void	exit_program(char *err_messege, int is_error, t_push_swap *data);
 
-
-
-
+#define TRI_MAX (5)
+#define MAX (1)
+#define MIN (0)
 #define INC (1)
 #define DEC (-1)
 
@@ -209,9 +209,5 @@ typedef struct s_triangle {
 	int	inc_or_dec;
 	int a_or_b; // which stack?
 }	t_triangle;
-
-
-
-
 
 #endif /* PUSH_SWAP_H */

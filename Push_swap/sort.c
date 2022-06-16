@@ -6,42 +6,31 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/11 15:47:47 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/06/15 21:38:44 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/06/16 15:10:23 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "push_swap.h"
 #include <stdlib.h>
-
+#include "push_swap.h"
 
 void	merge(t_push_swap *data);
 t_triangle	*create_triangle(int _inc_or_dec, int _size, int _a_or_b);
 t_darray	*make_tri_map(int total_num);
 void	print_tri_map(t_darray *tri_map);
-
-/** triangle 로 stack을 분배하는 함수. 핵심. heapify같은 존재랄까 */
 void	tringify(t_push_swap *data);
-
-/* --------------------------------------------------------  */
+void	merge_3tri_each(t_triangle *t1, t_triangle *t2, t_triangle *t3, t_push_swap *data);
+void	push_top_tri_to_opposite(t_triangle *t3, t_push_swap *data);
 
 void	sort_stack(t_push_swap *data)
 {
-	/* NOTE : if size is less than 5, sort hard(no algorithm) */
 	if (data->stack_a->stack->size <= 5)
 		sort_under_five(data);
-	// (1) if 1 ~ 5 data
 	else
 	{
 		data->tri_map = make_tri_map(data->stack_a->stack->size);
-
-		//.. do sorting more then 5
 		tringify(data);
-		
-		/* merge to a -> merge to b -> merge to a -> .... Until total step!  */
 		while (((t_triangle *)data->tri_map->data[0])->size < data->total_input_cnt)
 			merge(data);
-		
-		// 만약 마지막 단계가 stack a가 아니라면, stack_a로 모두 push.
 		if (data->stack_a->stack->size == 0)
 		{
 			while (data->stack_a->stack->size < (size_t)data->total_input_cnt)
@@ -49,69 +38,32 @@ void	sort_stack(t_push_swap *data)
 		}
 		delete_darray(&data->tri_map);
 	}
-
-
-	// NOTE: save executed commands to CMD as string.
-
-
-
-	// (1) if more
-
 }
-
-
-/** 만약 merge 할 때 ?  */
-void	merge_3tri_each(t_triangle *t1, t_triangle *t2, t_triangle *t3, t_push_swap *data);
-void	push_top_tri_to_opposite(t_triangle *t3, t_push_swap *data);
 
 void	merge(t_push_swap *data)
 {
-	/** data->tri_map */
-
-
-	// (1) 넘겨받은 설계도를 이용해서 merge 진행.
-	// 1 ... 2 3
-
-	// (2) 먼저 3을 다른쪽으로 넘긴다.  --> b에서 a로 전송. -> 가장 마지막에 있는 삼각형.
-
-	// 0 -> 1 --> 23 / 45
 	size_t	i;
 	t_triangle	*t1;
 	t_triangle	*t2;
 	t_triangle	*t3; // t3가 병합 전에 넘길 애들
 	
-	/* FIXME : 먼가 잘못함. --> split에서 모두 B로 넘겨주면 안되고, A에 쌓아둬야 한다...  */
-
 	i = -1; // merge 시작 전에 전체의 1/3을 넘겨야 한다.
-
 	while (++i < (data->tri_map->size / 3))
 	{
 		t3 = data->tri_map->data[data->tri_map->size - 1 - i];
 		push_top_tri_to_opposite(t3, data);
 	}
 
-
 	i = -1; // 모든 삼각형을 순서대로 순회
 	while (++i < (data->tri_map->size / 3))
 	{
-		
-		// [1 2 3] | [3 2 1] || [3 2 1]
 		t1 = data->tri_map->data[i]; //시작
 		t2 = data->tri_map->data[((data->tri_map->size / 3) * 2) - 1 - i]; //중간
 		t3 = data->tri_map->data[data->tri_map->size - 1 - i]; // 마지막
-
-		/** 각각의 삼각형들을 함치는 함수 -> 이때 t3가 넘길 삼각형임.*/
 		merge_3tri_each(t1, t2, t3, data);
-
-		// TODO: 거울효과 쓸 필요도 없다. 그냥 앞에서 join 다 된거 차례로 갱신.
 		t1->a_or_b *= -1; // join됬으니 방향은 반대
 		t1->size = t1->size + t2->size + t3->size; // join됬으니 합친 크기로 변경
-
-		// TODO : 여기서 앞부분이 전부 갱신됬으니, 그 외의 데이터는 전부 pop_back진행
-		/** darray_pop_back(data->tri_map); */
-		/** darray_pop_back(data->tri_map); */
 	}
-	// 병합 완료한 정보 update. --> 쉽다. 그냥 다 하고 나서 뒤에서부터 popback
 	i = -1;
 	size_t	map_size_prev = data->tri_map->size;
 	while (++i < (map_size_prev / 3) * 2)
@@ -136,24 +88,10 @@ void	push_top_tri_to_opposite(t_triangle *t3, t_push_swap *data)
 	t3->a_or_b *= -1;
 }
 
-
-
-/** int배열에서 최댓값 혹은 최솟값 찾아서 리턴 */
-
-#define MAX (1)
-#define MIN (0)
-
 int	find_max_or_min(int *arr, int size, int max_or_min)
 {
 	int	i;
 	int	target;
-
-
-	/** i = -1; */
-	/** ft_printf("Comparing... "); */
-	/** while (++i < size) */
-		/** ft_printf("%d ", arr[i]); */
-	/** ft_printf("\n"); */
 	
 	i = -1;
 	target = arr[0];
@@ -173,7 +111,6 @@ int	find_max_or_min(int *arr, int size, int max_or_min)
 				target = arr[i + 1];
 		}
 	}
-	/** ft_printf("target = %d\n\n", target); */
 	return (target);
 }
 
@@ -190,15 +127,12 @@ int	find_max_or_min_2(int a, int b, int max_or_min)
 
 void	merge_3tri_each(t_triangle *t1, t_triangle *t2, t_triangle *t3, t_push_swap *data)
 {
-	// (3) 그다음 각 삼각형의 top 을 가리키는 포인터를 별도로 저장한다.
 	int	d[3];
 	t_stack2 *dst;
 	t_stack2 *src;
 	int	max_or_min;
 	int	target;
 
-	// 잘 넘겨졌다면, 넘겨진 곳이 A라면, d1 d2는 B에 있고 d3는 A에 있다는 말. 
-	// 따라서 목적지(dst) = stack_a
 	if (t3->a_or_b == A)
 	{
 		dst = data->stack_a;
@@ -262,20 +196,8 @@ void	merge_3tri_each(t_triangle *t1, t_triangle *t2, t_triangle *t3, t_push_swap
 			shift_down(dst, data->cmd);
 			t3_size--;
 		}
-		/** ft_printf("t1:%d t2:%d t3:%d\n", t1_size, t2_size, t3_size); */
 	}
-	/** ft_printf("joined triangle cnt = %d\n", t1->size + t2->size + t3->size); */
-	/** ft_printf("Stack A size : %d B size : %d\n\n", data->stack_a->stack->size, data->stack_b->stack->size); */
 } 
-
-
-
-
-
-
-
-
-/** (1) split function */
 
 t_triangle	*create_triangle(int _inc_or_dec, int _size, int _a_or_b)
 {
@@ -290,10 +212,6 @@ t_triangle	*create_triangle(int _inc_or_dec, int _size, int _a_or_b)
 	}
 	return (tmp);
 }
-
-
-#define TRI_MAX (5) // 3개까지는 쪼개고, 2개는 쪼개지 않는것.
-/** TRI_MAX의 숫자를 바꿔가면서, 가장 명령어가 적은 것을 고를 것. */
 
 int	get_total_step(int total_num)
 {
@@ -325,13 +243,7 @@ t_darray	*make_tri_map(int total_num)
 	else
 		darray_push_back(tri_map, create_triangle(DEC, total_num, B));
 
-	
-	/** mirroring 구조 변경 */
-	/** (1 2 3) || (3 2 1) | (반대로 넘길 애들 3 2 1) */
-	
-	/** 먼저 */
 	print_tri_map(tri_map);
-	// divide tri_map (get total steps)
 	while (((t_triangle *)(tri_map->data[0]))->size > TRI_MAX)
 	{
 		map_size_prev = tri_map->size;
@@ -362,7 +274,6 @@ t_darray	*make_tri_map(int total_num)
 }
 
 /* TODO : tringify 완료 후 직접 확인해볼 것. 잘 됬는지. visualizer 편집  */
-
 void	push_tri(int size, t_triangle *tri, t_push_swap *data)
 {
 	int	p[size];
@@ -430,7 +341,7 @@ void	tringify(t_push_swap *data)
 void	print_tri_map(t_darray *tri_map)
 {
 	size_t	i;
-
+	
 	i = 0;
 	ft_printf("\n");
 	while (i < tri_map->size)
@@ -460,25 +371,3 @@ void	print_tri_map(t_darray *tri_map)
 	ft_printf("|");
 	ft_printf("\n");
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
