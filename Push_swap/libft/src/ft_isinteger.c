@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/11 15:25:27 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/06/11 15:27:16 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/06/16 15:53:37 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,4 +37,3 @@ bool	ft_isinteger(char *s)
 	else
 		return (true);
 }
-

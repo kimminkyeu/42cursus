@@ -6,7 +6,7 @@
 #    By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/05/20 10:56:10 by minkyeki          #+#    #+#              #
-#    Updated: 2022/06/16 14:27:33 by minkyeki         ###   ########.fr        #
+#    Updated: 2022/06/18 16:05:32 by minkyeki         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -15,11 +15,19 @@ CFLAGS			= -Werror -Wextra -Wall
 
 # NOTE: Add souce files here!
 # ==========================================
-SRC_FILES			= mandatory check_input stack operation helper \
-					  sort sort_utils sort_five
+SRC_FILES			= mandatory check_input \
+					  stack stack2 \
+					  command command_utils operation operation2 helper \
+					  sort_main sort_utils \
+					  sort_merge sort_merge2 \
+					  sort_divide sort_divide2
 
-SRC_FILES_BONUS		= bonus stack check_input operation helper \
-					  sort sort_utils sort_five
+SRC_FILES_BONUS		= bonus bonus_utils bonus_utils2 check_input \
+					  stack stack2 \
+					  command command_utils operation operation2 helper \
+					  sort_main sort_utils \
+					  sort_merge sort_merge2 \
+					  sort_divide sort_divide2
 # ==========================================
 
 LIBFT		= libft
@@ -69,8 +77,8 @@ all: $(NAME)
 
 $(NAME): $(OBJ_RESULT)
 	@make bonus -C $(LIBFT)
-	mv libft/libft.a ./$(OBJ_DIR)
-	$(CC) $(CFLAGS) $^ $(OBJ_DIR)libft.a -o $@
+	@mv libft/libft.a ./$(OBJ_DIR)
+	@$(CC) $(CFLAGS) $^ $(OBJ_DIR)libft.a -o $@
 ifdef BONUS
 	@echo "$(YELLOW)===============================================$(DEF_COLOR)"
 	@echo "$(YELLOW)|      Push_Swap bonus compile finished.      |$(DEF_COLOR)"
@@ -82,14 +90,14 @@ else
 endif
 
 $(OBJ_DIR)%.o: $(SRC_DIR)%.c | $(OBJ_MKDIR)
-	$(CC) $(CFLAGS) -c $^ -o $@
+	@$(CC) $(CFLAGS) -c $^ -o $@
 	@echo "$(YELLOW)Compiling... \t$< $(DEF_COLOR)"
 
 $(OBJ_MKDIR):
 	@mkdir -p $(OBJ_DIR)
 
 bonus:
-	make BONUS=1
+	@make BONUS=1
 
 clean:
 	@$(RM) -rf libft.a
