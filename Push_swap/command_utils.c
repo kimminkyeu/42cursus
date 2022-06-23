@@ -6,35 +6,52 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/16 19:30:26 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/06/16 19:43:01 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/06/23 12:37:13 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "push_swap.h"
 
-void	check_2cmd(int cmd_code1, int cmd_code2, t_darray *new_cmd, size_t *i)
+static int	is_cmd_optimizable(int cmd_code1, int cmd_code2)
 {
-	if (cmd_code1 == SA && cmd_code2 == SB)
-	{
-		push_cmd(new_cmd, SS);
-		*i += 1;
-	}
-	else if (cmd_code1 == RA && cmd_code2 == RB)
-	{
-		push_cmd(new_cmd, RR);
-		*i += 1;
-	}
-	else if (cmd_code1 == RRA && cmd_code2 == RRB)
-	{
-		push_cmd(new_cmd, RRR);
-		*i += 1;
-	}
+	if ((cmd_code1 == SA && cmd_code2 == SB) \
+			|| (cmd_code1 == SB && cmd_code2 == SA))
+		return (1);
+	else if ((cmd_code1 == RA && cmd_code2 == RB) \
+			|| (cmd_code1 == RB && cmd_code2 == RA))
+		return (2);
+	else if ((cmd_code1 == RRA && cmd_code2 == RRB) \
+			|| (cmd_code1 == RRB && cmd_code2 == RRA))
+		return (3);
 	else if ((cmd_code1 == RRA && cmd_code2 == RA) \
 			|| (cmd_code1 == RRB && cmd_code2 == RB) \
 			|| (cmd_code1 == RA && cmd_code2 == RRA) \
 			|| (cmd_code1 == RB && cmd_code2 == RRB) \
 			|| (cmd_code1 == PA && cmd_code2 == PB) \
 			|| (cmd_code1 == PB && cmd_code2 == PA))
+		return (4);
+	else
+		return (0);
+}
+
+void	check_2cmd(int cmd_code1, int cmd_code2, t_darray *new_cmd, size_t *i)
+{
+	if (is_cmd_optimizable(cmd_code1, cmd_code2) == 1)
+	{
+		push_cmd(new_cmd, SS);
+		*i += 1;
+	}
+	else if (is_cmd_optimizable(cmd_code1, cmd_code2) == 2)
+	{
+		push_cmd(new_cmd, RR);
+		*i += 1;
+	}
+	else if (is_cmd_optimizable(cmd_code1, cmd_code2) == 3)
+	{
+		push_cmd(new_cmd, RRR);
+		*i += 1;
+	}
+	else if (is_cmd_optimizable(cmd_code1, cmd_code2) == 4)
 		*i += 1;
 	else
 		push_cmd(new_cmd, cmd_code1);
