@@ -1,0 +1,4 @@
+hello my name is kyeu!
+welcome to 42Seoul's cpp-module file-stream example.
+42Seoul is the best computer science education camp in Korea!
+Fill free to tour our 42Seoul-Gaepo campus.
